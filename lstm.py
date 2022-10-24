@@ -38,7 +38,7 @@ class LSTM():
     lstm_model = Sequential()
 
     #Input layer
-    lstm_model.add(LSTM(units=self.n_units, input_shape=(self.n_features, 1), return_sequences=True, dropout = self.dropout_rate, recurrent_dropout = self.dropout_rate))
+    lstm_model.add(LSTM(units=self.n_units, input_shape=(self.n_timesteps, self.n_features), return_sequences=True, dropout = self.dropout_rate, recurrent_dropout = self.dropout_rate))
     
     #Hidden layers
     for i in range(self.layers -2):
