@@ -72,10 +72,9 @@ def lstm_format(df, seq_length):
     sequenses = []
 
     for option in df.Option_key.unique():
+        print("Key:", option)
+        print(df[df["Option_key" == option]])
         df_opt = specific_option(df[df["Option_key" == option]], seq_length)
-
-
-
 
 def specific_option(df, seq_length):
     """
@@ -96,5 +95,6 @@ filenames_r = ["yield-curve-rates-2022.csv", "yield-curve-rates-1990-2021.csv"]
 
 df = get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, True)
 print(df)
+
 df.info()
 df = lstm_format(df, 5)
