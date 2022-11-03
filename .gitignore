@@ -123,7 +123,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+<<<<<<< HEAD
 
 
 # mac
 **/.DS_Store
+=======
+#Data
+/data
+>>>>>>> main
