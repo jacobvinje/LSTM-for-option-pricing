@@ -62,11 +62,11 @@ def get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, call = True)
     df = combine_opt_r(df_opt, df_r)
     return df.dropna() #TODO: Fix handling of nan values
 
-def lstm_format(df, features, seq_length):
+def lag_features(df, features, seq_length):
     """
-    Transforms a raw 2D list of option data into a explanatory variable x and explained y
-    x: 3D matrix of lagged features per sequence
-    y: 2D array of bid-ask prices per sequence
+    Transforms a raw 2D dataframe of option data into 2D dataframe of sequence data
+    Last 2 indexes per sequence is bid and ask price
+    The len(features)*seq_length features before are sequences of features
     """
     df = df.sort_values(["Expire_date", "Strike", "Ttl"], ascending = [True, True, False])
 
@@ -77,17 +77,17 @@ def lstm_format(df, features, seq_length):
     df["Check_strike"] = df["Strike"] == df["Strike"].shift(seq_length-1)
     df["Check_expire"] = df["Expire_date"] == df["Expire_date"].shift(seq_length-1)
     df = df[(df["Check_strike"] == True) & (df["Check_expire"] == True)]
-
-    x = df[[feature + " - " + str(step) for step in range(seq_length)[::-1] for feature in features]].to_numpy()
-    y = df[["Bid", "Ask"]].to_numpy()
-    return x, y
+    df = df.drop(["Check_strike", "Check_expire"], axis=1)
+    df[["Bid_last", "Ask_last"]] = df[["Bid", "Ask"]]
+    return df
 
 def create_train_test(df, features, split_date, seq_length):
-    train_x, train_y = lstm_format(df[df["Quote_date"] < split_date], features, seq_length)
-    test_x, test_y = lstm_format(df[df["Quote_date"] >= split_date], features, seq_length)
-    train_x, test_x = min_max_scale(train_x, test_x)
-    train_y, test_y = min_max_scale(train_y, test_y)
-    return np.reshape(train_x, (len(train_x), seq_length, len(features))), train_y, np.reshape(test_x, (len(test_x), seq_length, len(features))), test_y
+    train = lag_features(df[df["Quote_date"] < split_date], features, seq_length).to_numpy()
+    test = lag_features(df[df["Quote_date"] >= split_date], features, seq_length).to_numpy()
+    print(train[:10][:,-6:])
+    train[:, -len(features)*seq_length - 2:], test[:, -len(features)*seq_length - 2:] = min_max_scale(train[:, -len(features)*seq_length-2:], test[:, -len(features)*seq_length-2:])
+    #return np.reshape(train_x, (len(train_x), seq_length, len(features))), train_y, np.reshape(test_x, (len(test_x), seq_length, len(features))), test_y
+    return train, test #TODO: Move reshaping to modell
 
 def min_max_scale(train, test):
     scaler = MinMaxScaler()
@@ -95,9 +95,9 @@ def min_max_scale(train, test):
     test = scaler.transform(test)
     return train, test
 
-features = ["Underlying_last", "Moneyness", "Ttl", "R"]
-train_x, train_y, test_x, test_y = create_train_test(df_read, features,  "2022-09-18", 5)
+
     
+
 
 path_opt = "./data/options/"
 #filenames = ["spx_eod_" + str(year) + (str(month) if month >= 10 else "0"+str(month)) +".txt" for year in range(2010, 2022) for month in range(1, 13)] + ["spx_eod_2022" + (str(month) if month >= 10 else "0"+str(month)) +".txt" for month in range(1, 10)]
@@ -105,8 +105,9 @@ filenames_opt = ["spx_eod_202209.txt"]
 path_r = "./data/rates/"
 filenames_r = ["yield-curve-rates-2022.csv", "yield-curve-rates-1990-2021.csv"]
 
-df = get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, True)
-print(df)
+df_read = get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, True)
+print(df_read)
+df_read.info()
 
-df.info()
-df = lstm_format(df, 5)
+features = ["Underlying_last", "Moneyness", "Ttl", "R"]
+train_x, train_y, test_x, test_y = create_train_test(df_read, features,  "2022-09-18", 5)
