@@ -25,7 +25,6 @@ def process_options(df_opt, call = True):
     df_opt["Moneyness"] = df_opt["Underlying_last"] / df_opt["Strike"]
     
     df_vol = calculate_volatility(df_opt)
-    df_vol.info()
     df_opt = pd.merge(df_opt, df_vol, on ="Quote_date", how = "left")
 
     columns = ["Quote_date", "Expire_date",  "Underlying_last", "Strike", "Moneyness", "Ask", "Bid", "Ttl", "Volatility"]
@@ -73,10 +72,14 @@ def lag_features(df, features, seq_length):
 
 def create_train_test(df, features, split_date, seq_length):
     """Splits data in training and test set, and transforms data to right 2D format"""
-    train = lag_features(df[df["Quote_date"] < split_date], features, seq_length).to_numpy()
-    test = lag_features(df[df["Quote_date"] >= split_date], features, seq_length).to_numpy()
-    train[:, -len(features)*seq_length - 2:], test[:, -len(features)*seq_length - 2:] = min_max_scale(train[:, -len(features)*seq_length-2:], test[:, -len(features)*seq_length-2:])
-    return train, test #TODO: Move reshaping to modell
+    train = lag_features(df[df["Quote_date"] < split_date], features, seq_length)
+    test = lag_features(df[df["Quote_date"] >= split_date], features, seq_length)
+    return train, test
+
+def df_to_xy(df, num_features, seq_length):
+    array = df.to_numpy()
+    array_x, array_y = array[:, -num_features*seq_length - 2:-2].astype(np.float32), array[:,-2:].astype(np.float32)
+    return array_x, array_y
 
 def min_max_scale(train, test):
     """Scales a training and test set using MinMaxScaler. The scaler is calibrated on the training set"""
@@ -85,16 +88,9 @@ def min_max_scale(train, test):
     test = scaler.transform(test)
     return train, test
 
-def split_x_y(data, num_features, seq_length):
-    """Splits data in explanatory data x and explained data y"""
-    data_x, data_y = data[:, -num_features*seq_length - 2:-2].astype(np.float32), data[:,-2:].astype(np.float32)
-    data_x = np.reshape(data_x, (len(data_x), seq_length, num_features))
-    return data_x, data_y
 
 
-    
-
-
+"""
 path_opt = "./data/options/"
 #filenames = ["spx_eod_" + str(year) + (str(month) if month >= 10 else "0"+str(month)) +".txt" for year in range(2010, 2022) for month in range(1, 13)] + ["spx_eod_2022" + (str(month) if month >= 10 else "0"+str(month)) +".txt" for month in range(1, 10)]
 filenames_opt = ["spx_eod_202209.txt"]
@@ -107,3 +103,4 @@ df_read.info()
 
 features = ["Underlying_last", "Moneyness", "Ttl", "R"]
 train_x, train_y, test_x, test_y = create_train_test(df_read, features,  "2022-09-18", 5)
+"""
