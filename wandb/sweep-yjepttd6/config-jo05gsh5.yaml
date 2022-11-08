@@ -1,0 +1,16 @@
+wandb_version: 1
+
+dropout:
+  value: 0.1
+layers:
+  value: 10
+learning_rate:
+  value: 0.1
+num_features:
+  value: 5
+recurrent_dropout:
+  value: 0.1
+seq_length:
+  value: 10
+units:
+  value: 16
