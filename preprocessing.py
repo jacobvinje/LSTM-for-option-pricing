@@ -39,10 +39,31 @@ def calculate_volatility(df):
     return df_vol[["Quote_date", "Volatility"]]
 
 def process_rates(df_r):
-    """Renames rate duration"""
+    """Renames date column and rate duration to days"""
     df_r["Date"] = pd.to_datetime(df_r["Date"])
-    df_r = df_r.rename(columns = {"Date" : "Quote_date", "3 Mo": "R"})
-    return df_r[["Quote_date", "R"]]
+    keys = {"Date" : "Quote_date",
+            "1 Mo": 30,
+            "3 Mo": 90,
+            "6 Mo": 180,
+            "1 Yr": 365,
+            "2 Yr": 365*2,
+            "3 Yr": 365*3,
+            "5 Yr": 365*5,
+            "7 Yr": 365*7,
+            "10 Yr": 365*10}
+    df_r = df_r.rename(columns = keys)
+    return df_r[keys.values()]
+
+def combine_opt_rates(df_opt, df_r):
+    """Combines dataframes for options and rates matching the Ttl of the option to the closest R"""
+    df_opt = pd.merge(df_opt, df_r, on ="Quote_date", how = "left")
+    rates = list(df_r.columns)
+    rates.remove("Quote_date")
+    df_opt["Ttl_diff"] = df_opt["Ttl"].apply(lambda x: (np.abs(np.array(rates) - x)).argmin())
+    df_opt["R"] = df_opt[["Ttl_diff"] + rates].values.tolist()
+    df_opt["R"] = df_opt["R"].apply(lambda x: x[int(x[0]+1)])
+    df_opt = df_opt.drop(rates + ["Ttl_diff"], axis=1)
+    return df_opt.dropna()
 
 def get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, call = True):
     """Wrapper function to extract option data and rates. Returns a combined dataframe"""
@@ -50,8 +71,8 @@ def get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, call = True)
     df_r = read_files(path_r, filenames_r)
     df_opt = process_options(df_opt, call)
     df_r = process_rates(df_r)
-    df = df_opt = pd.merge(df_opt, df_r, on ="Quote_date", how = "left")
-    return df.dropna() #TODO: Fix handling of nan values
+    df = combine_opt_rates(df_opt, df_r)
+    return df #TODO: Fix handling of nan values
 
 def lag_features(df, features, seq_length):
     """Transforms a raw 2D dataframe of option data into 2D dataframe ofsequence data.
@@ -77,6 +98,7 @@ def create_train_test(df, features, split_date, seq_length):
     return train, test
 
 def df_to_xy(df, num_features, seq_length):
+    """Transforms a dataframe into two arrays of explanatory variables x and explained variables y"""
     array = df.to_numpy()
     array_x, array_y = array[:, -num_features*seq_length - 2:-2].astype(np.float32), array[:,-2:].astype(np.float32)
     return array_x, array_y
