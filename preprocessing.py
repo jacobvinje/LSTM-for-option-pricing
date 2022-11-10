@@ -1,11 +1,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from pathlib import Path
 
 def read_files(path, filenames):
     """Reads all files and returns a dataframe"""
     return pd.concat((pd.read_csv(path + f, skipinitialspace=True) for f in filenames))
+
+def read_file(file):
+    """Read a single file and return a dataframe"""
+    return pd.read_csv(file, skipinitialspace=True)
 
 def process_options(df_opt, call = True):
     """Cleans up column names and add time to live (Ttl) and volatility column to the dataframe"""
@@ -23,11 +28,13 @@ def process_options(df_opt, call = True):
     df_opt["Ttl"] = df_opt.apply(lambda row: (row.Expire_date - row.Quote_date).days, axis = 1)
 
     df_opt["Moneyness"] = df_opt["Underlying_last"] / df_opt["Strike"]
-    
+    df_opt["Bid_strike"] = df_opt["Bid"] / df_opt["Strike"]
+    df_opt["Ask_strike"] = df_opt["Ask"] / df_opt["Strike"]
+     
     df_vol = calculate_volatility(df_opt)
     df_opt = pd.merge(df_opt, df_vol, on ="Quote_date", how = "left")
 
-    columns = ["Quote_date", "Expire_date",  "Underlying_last", "Strike", "Moneyness", "Ask", "Bid", "Ttl", "Volatility"]
+    columns = ["Quote_date", "Expire_date",  "Underlying_last", "Strike", "Ask", "Bid",  "Bid_strike", "Ask_strike", "Moneyness", "Ttl", "Volatility"]
     df_opt = df_opt[columns]
     df_opt = df_opt[df_opt["Ttl"] != 0]
     return df_opt[columns]
@@ -88,14 +95,12 @@ def lag_features(df, features, seq_length):
     df["Check_expire"] = df["Expire_date"] == df["Expire_date"].shift(seq_length-1)
     df = df[(df["Check_strike"] == True) & (df["Check_expire"] == True)]
     df = df.drop(["Check_strike", "Check_expire"], axis=1)
-    df[["Bid_last", "Ask_last"]] = df[["Bid", "Ask"]]
+    df[["Bid_strike_last", "Ask_strike_last"]] = df[["Bid_strike", "Ask_strike"]]
     return df
 
-def create_train_test(df, features, split_date, seq_length):
+def create_train_test(df, split_date):
     """Splits data in training and test set, and transforms data to right 2D format"""
-    train = lag_features(df[df["Quote_date"] < split_date], features, seq_length)
-    test = lag_features(df[df["Quote_date"] >= split_date], features, seq_length)
-    return train, test
+    return df[df["Quote_date"] < split_date], df[df["Quote_date"] >= split_date]
 
 def df_to_xy(df, num_features, seq_length):
     """Transforms a dataframe into two arrays of explanatory variables x and explained variables y"""
@@ -110,6 +115,27 @@ def min_max_scale(train, test):
     test = scaler.transform(test)
     return train, test
 
+def create_csv(first_year, last_year):
+    path_opt = "./data/options/"
+    filenames_opt = ["spx_eod_" + str(year) + (str(month) if month >= 10 else "0"+str(month)) +".txt" for year in range(first_year-1, last_year+1) for month in range(1, 13)]
+    path_r = "./data/rates/"
+    filenames_r = ["yield-curve-rates-2022.csv", "yield-curve-rates-1990-2021.csv"]
+    call = True
+    df = get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, call)
+    print("Data read")
+
+    df = df[df["Quote_date"] >= f"{str(first_year)}-01-01"]
+    df = df[df["Quote_date"] <= f"{str(last_year)}-12-31"]
+
+    filename = f"./data/processed_data/{first_year}-{last_year}.csv"
+    filepath = Path(filename)  
+    filepath.parent.mkdir(parents=True, exist_ok=True)  
+    df.to_csv(filename)
+    print("Data written")
+
+"""first_year = 2020
+last_year = 2021
+create_csv(first_year, last_year)"""
 
 
 """
