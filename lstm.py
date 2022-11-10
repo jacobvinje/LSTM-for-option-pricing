@@ -1,10 +1,10 @@
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Input
+from keras.layers import Dense, LSTM, BatchNormalization
 from keras import backend as K
 from tensorflow.keras.optimizers import Adam
 import keras as KER
 from sklearn.model_selection import train_test_split
-from keras.activations import linear, relu
+from keras.activations import tanh, relu
 
 """
 NEW LSTM code below
@@ -15,29 +15,39 @@ def create_model(config):
 
   model.add(LSTM(
     units = config["units"],
-    activation = linear,
+    activation = relu,
     input_shape = (config["seq_length"], config["num_features"]),
     dropout = config["dropout"],
     recurrent_dropout = config["recurrent_dropout"],
     return_sequences = True
-  )) 
+  ))
+
+  """model.add(BatchNormalization(
+    momentum = config["bn_momentum"]
+  ))"""
 
   for i in range(config["layers"]-2):
     model.add(LSTM(
     units = config["units"],
-    activation = linear,
+    activation = relu,
     dropout = config["dropout"],
     recurrent_dropout = config["recurrent_dropout"],
     return_sequences = True
-  ))
+    ))
+    """model.add(BatchNormalization(
+      momentum = config["bn_momentum"]
+    ))"""
 
   model.add(LSTM(
     units = config["units"],
-    activation = linear,
+    activation = relu,
     dropout = config["dropout"],
     recurrent_dropout = config["recurrent_dropout"],
     return_sequences = False
   ))
+  """model.add(BatchNormalization(
+      momentum = config["bn_momentum"]
+    ))"""
 
   model.add(Dense(
     units = 2,
@@ -49,7 +59,7 @@ def create_model(config):
       learning_rate = config["learning_rate"]
     ),
     loss = "mse",
-    metrics = ["accuracy"]
+    metrics = ["mae"]
   )
 
   return model
