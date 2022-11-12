@@ -1,0 +1,41 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.8.1",
+    "heartbeatAt": "2022-11-08T19:00:33.748111",
+    "startedAt": "2022-11-08T19:00:32.756148",
+    "docker": null,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "git": {
+        "remote": "https://github.com/hjalmarvinje/LSTM-for-option-pricing.git",
+        "commit": "831ce47a15cad669d7458b4eaedf54f792ec681e"
+    },
+    "email": "hjalmarvinje@gmail.com",
+    "root": "/Users/hjalmarvinje/Documents/LSTM for option pricing",
+    "host": "dhcp-10-250-253-46.harvard.edu",
+    "username": "hjalmarvinje",
+    "executable": "/usr/local/bin/python3",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1400,
+        "min": 1400,
+        "max": 1400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1400,
+            "min": 1400,
+            "max": 1400
+        }
+    ],
+    "disk": {
+        "total": 233.46913528442383,
+        "used": 8.221149444580078
+    },
+    "memory": {
+        "total": 8.0
+    }
+}
