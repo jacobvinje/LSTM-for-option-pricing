@@ -36,7 +36,7 @@ def process_options(df_opt, call = True):
 
     columns = ["Quote_date", "Expire_date",  "Underlying_last", "Strike", "Ask", "Bid",  "Bid_strike", "Ask_strike", "Moneyness", "Ttl", "Volatility"]
     df_opt = df_opt[columns]
-    df_opt = df_opt[df_opt["Ttl"] != 0]
+    df_opt = df_opt[(df_opt["Ttl"] != 0) & (df_opt["Ttl"] <= 365*3)]
     return df_opt[columns]
 
 def calculate_volatility(df):
@@ -133,9 +133,9 @@ def create_csv(first_year, last_year):
     df.to_csv(filename)
     print("Data written")
 
-"""first_year = 2020
+first_year = 2019
 last_year = 2021
-create_csv(first_year, last_year)"""
+create_csv(first_year, last_year)
 
 
 """
