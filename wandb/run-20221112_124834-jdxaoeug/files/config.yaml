@@ -1,0 +1,106 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.13.5
+    framework: keras
+    is_jupyter_run: true
+    is_kaggle_kernel: false
+    python_version: 3.9.4
+    start_time: 1668253714.171725
+    t:
+      1:
+      - 2
+      - 3
+      - 5
+      - 53
+      - 55
+      2:
+      - 2
+      - 3
+      - 5
+      - 53
+      - 55
+      3:
+      - 2
+      - 3
+      - 8
+      - 16
+      - 23
+      - 37
+      4: 3.9.4
+      5: 0.13.5
+      8:
+      - 1
+      - 3
+      - 5
+clip_norm:
+  desc: null
+  value: 0.2949608512027055
+dropout:
+  desc: null
+  value: 0.09116920928768212
+layers:
+  desc: null
+  value: 4
+lr:
+  desc: null
+  value: 0.00711433771955104
+method:
+  desc: null
+  value: bayes
+metric:
+  desc: null
+  value:
+    goal: minimize
+    name: val_loss
+minibatch_size:
+  desc: null
+  value: 512
+name:
+  desc: null
+  value: Erlend-test
+parameters:
+  desc: null
+  value:
+    clip_norm:
+      distribution: uniform
+      max: 1
+      min: 1.0e-05
+    dropout:
+      distribution: uniform
+      max: 0.4
+      min: 0
+    layers:
+      values:
+      - 2
+      - 3
+      - 4
+      - 5
+    lr:
+      distribution: uniform
+      max: 0.01
+      min: 1.0e-05
+    minibatch_size:
+      values:
+      - 512
+      - 1024
+      - 2048
+      - 4096
+    recurrent_dropout:
+      distribution: uniform
+      max: 0.4
+      min: 0
+    units:
+      values:
+      - 20
+      - 40
+      - 60
+      - 80
+recurrent_dropout:
+  desc: null
+  value: 0.3948240252780007
+units:
+  desc: null
+  value: 40

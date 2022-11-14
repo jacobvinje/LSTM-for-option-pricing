@@ -1,0 +1,16 @@
+wandb_version: 1
+
+clip_norm:
+  value: 0.819431820115507
+dropout:
+  value: 0.2274176002660815
+layers:
+  value: 3
+lr:
+  value: 0.004020372903708056
+minibatch_size:
+  value: 1024
+recurrent_dropout:
+  value: 0.33975860608965225
+units:
+  value: 60

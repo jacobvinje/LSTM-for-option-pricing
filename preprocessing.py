@@ -133,9 +133,9 @@ def create_csv(first_year, last_year):
     df.to_csv(filename)
     print("Data written")
 
-first_year = 2019
+"""first_year = 2019
 last_year = 2021
-create_csv(first_year, last_year)
+create_csv(first_year, last_year)"""
 
 
 """

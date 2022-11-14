@@ -1,0 +1,41 @@
+{
+    "os": "Windows-10-10.0.22000-SP0",
+    "python": "3.9.4",
+    "heartbeatAt": "2022-11-12T12:01:38.126274",
+    "startedAt": "2022-11-12T12:01:37.380383",
+    "docker": null,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "C:/Users/Erlend/Google Drive/NTNU/5. Klasse/Prosjektoppgave/Git folder/LSTM-for-option-pricing",
+    "git": {
+        "remote": "https://github.com/hjalmarvinje/LSTM-for-option-pricing.git",
+        "commit": "2b8ed598f7630390d5fbc5803763ec74bae4ce05"
+    },
+    "email": "erlendrygg@gmail.com",
+    "root": "C:/Users/Erlend/Google Drive/NTNU/5. Klasse/Prosjektoppgave/Git folder/LSTM-for-option-pricing",
+    "host": "DESKTOP-LPGJ2RO",
+    "username": "Erlend",
+    "executable": "c:\\Users\\Erlend\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1803.0,
+        "min": 0.0,
+        "max": 2304.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1803.0,
+            "min": 0.0,
+            "max": 2304.0
+        }
+    ],
+    "disk": {
+        "total": 475.69237899780273,
+        "used": 436.9889144897461
+    },
+    "memory": {
+        "total": 15.801258087158203
+    }
+}
