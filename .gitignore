@@ -125,10 +125,13 @@ dmypy.json
 
 <<<<<<< HEAD
 
-
 # mac
 **/.DS_Store
 =======
 #Data
 /data
 >>>>>>> main
+
+
+# wandb / Hyperparam search log
+/wandb
