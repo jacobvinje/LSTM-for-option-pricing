@@ -17,37 +17,33 @@ def create_model(config):
     units = config["units"],
     activation = relu,
     input_shape = (config["seq_length"], config["num_features"]),
-    dropout = config["dropout"],
-    recurrent_dropout = config["recurrent_dropout"],
     return_sequences = True
   ))
 
-  """model.add(BatchNormalization(
+  model.add(BatchNormalization(
     momentum = config["bn_momentum"]
-  ))"""
+  ))
+
 
   for i in range(config["layers"]-2):
     model.add(LSTM(
-    units = config["units"],
-    activation = relu,
-    dropout = config["dropout"],
-    recurrent_dropout = config["recurrent_dropout"],
-    return_sequences = True
+      units = config["units"],
+      activation = relu,
+      return_sequences = True
     ))
-    """model.add(BatchNormalization(
+    model.add(BatchNormalization(
       momentum = config["bn_momentum"]
-    ))"""
+    ))
 
   model.add(LSTM(
     units = config["units"],
     activation = relu,
-    dropout = config["dropout"],
-    recurrent_dropout = config["recurrent_dropout"],
     return_sequences = False
   ))
-  """model.add(BatchNormalization(
-      momentum = config["bn_momentum"]
-    ))"""
+
+  model.add(BatchNormalization(
+    momentum = config["bn_momentum"]
+  ))
 
   model.add(Dense(
     units = 2,
@@ -56,7 +52,8 @@ def create_model(config):
 
   model.compile(
     optimizer = Adam(
-      learning_rate = config["learning_rate"]
+      learning_rate = config["learning_rate"],
+      clipnorm=config["clip_norm"]
     ),
     loss = "mse",
     metrics = ["mae"]
