@@ -1,7 +1,7 @@
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, BatchNormalization
 from keras import backend as K
-from tensorflow.keras.optimizers import Adam
+from tensorflow_addons.optimizers import AdamW
 import keras as KER
 from sklearn.model_selection import train_test_split
 from keras.activations import tanh, relu
@@ -51,9 +51,9 @@ def create_model(config):
   ))  
 
   model.compile(
-    optimizer = Adam(
+    optimizer = AdamW(
       learning_rate = config["learning_rate"],
-      clipnorm=config["clip_norm"]
+      weight_decay = config["weight_decay"]
     ),
     loss = "mse",
     metrics = ["mae"]
