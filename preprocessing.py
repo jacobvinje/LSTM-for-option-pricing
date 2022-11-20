@@ -89,6 +89,9 @@ def lag_features(df, features, seq_length):
     Last 2 indexes per sequence are bid and ask price. The len(features)*seq_length
     features before are sequences of features"""
     df = df.sort_values(["Expire_date", "Strike", "Ttl"], ascending = [True, True, False])
+    
+    # Adding lag for naive benchmarking
+    #df["Naive"] = df["Price"].shift(1)
 
     for step in range(seq_length)[::-1]:
         for feature in features:
@@ -130,21 +133,19 @@ def create_csv(first_year, last_year):
     df = get_model_dataset(path_opt, filenames_opt, path_r, filenames_r, call)
     print("Data read")
 
-    df = lag_features(df, features = ["Underlying_last", "Strike", "Ttl", "Volatility", "R"], seq_length = 5)
-
     df = df[df["Quote_date"] >= f"{str(first_year)}-01-01"]
     df = df[df["Quote_date"] <= f"{str(last_year)}-12-31"]
 
-    filename = f"./data/processed_data/{first_year}-{last_year}_underlying-strike_only-price_inc.lags.csv"
+    filename = f"./data/processed_data/{first_year}-{last_year}_underlying-strike_only-price.csv"
 
     filepath = Path(filename)  
     filepath.parent.mkdir(parents=True, exist_ok=True)  
     df.to_csv(filename)
     print("Data written")
 
-"""first_year = 2021
+first_year = 2019
 last_year = 2021
-create_csv(first_year, last_year)"""
+create_csv(first_year, last_year)
 
 
 """
