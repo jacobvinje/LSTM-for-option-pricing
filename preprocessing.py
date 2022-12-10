@@ -150,7 +150,8 @@ create_csv(first_year, last_year)
 
 """
 path_opt = "./data/options/"
-#filenames = ["spx_eod_" + str(year) + (str(month) if month >= 10 else "0"+str(month)) +".txt" for year in range(2010, 2022) for month in range(1, 13)] + ["spx_eod_2022" + (str(month) if month >= 10 else "0"+str(month)) +".txt" for month in range(1, 10)]
+#filenames = ["spx_eod_" + str(year) + (str(month) if month >= 10 else "0"+str(month)) +".txt" for year in range(2010, 2022) for month in rang
+#e(1, 13)] + ["spx_eod_2022" + (str(month) if month >= 10 else "0"+str(month)) +".txt" for month in range(1, 10)]
 filenames_opt = ["spx_eod_202209.txt"]
 path_r = "./data/rates/"
 filenames_r = ["yield-curve-rates-2022.csv", "yield-curve-rates-1990-2021.csv"]
