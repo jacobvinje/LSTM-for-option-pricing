@@ -46,7 +46,7 @@ def create_model(config):
   ))
 
   model.add(Dense(
-    units = 2,
+    units = 1,
     activation = relu
   ))  
 
